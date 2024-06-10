@@ -14,3 +14,11 @@ set_property(TARGET ${PROJECT_NAME} PROPERTY CXX_STANDARD 17)
 if (UNIX)
    target_link_libraries(${PROJECT_NAME} pthread)
 endif (UNIX)
+
+if (WIN32)
+    # /ENTRY:mainCRTStartup keeps the same "main" function instead of requiring "WinMain"
+    set(SUBSYSTEM_LINKER_OPTIONS /SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup)
+endif (WIN32)
+target_link_options(${PROJECT_NAME} PRIVATE ${SUBSYSTEM_LINKER_OPTIONS})
+
+set(CMAKE_SUPPRESS_REGENERATION true)

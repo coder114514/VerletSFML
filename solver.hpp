@@ -147,13 +147,13 @@ private:
 
     void checkCollisions(float dt)
     {
-        const float    response_coef = 0.75f;
-        const uint64_t objects_count = m_objects.size();
+        const float  response_coef = 0.75f;
+        const size_t objects_count = m_objects.size();
         // Iterate on all objects
-        for (uint64_t i{0}; i < objects_count; ++i) {
+        for (size_t i{0}; i < objects_count; ++i) {
             VerletObject& object_1 = m_objects[i];
             // Iterate on object involved in new collision pairs
-            for (uint64_t k{i + 1}; k < objects_count; ++k) {
+            for (size_t k{i + 1}; k < objects_count; ++k) {
                 VerletObject&      object_2 = m_objects[k];
                 const sf::Vector2f v        = object_1.position - object_2.position;
                 const float        dist2    = v.x * v.x + v.y * v.y;
