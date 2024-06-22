@@ -25,7 +25,7 @@ int32_t main(int32_t, char*[])
 
     sf::ContextSettings settings;
     settings.antialiasingLevel = 1;
-    sf::RenderWindow window(sf::VideoMode(window_width, window_height), "Verlet", sf::Style::Default, settings);
+    sf::RenderWindow window(sf::VideoMode(window_width, window_height), "Verlet", sf::Style::Close, settings);
     const uint32_t frame_rate = 60;
     window.setFramerateLimit(frame_rate);
 
@@ -41,9 +41,9 @@ int32_t main(int32_t, char*[])
     const float        object_spawn_delay    = 0.025f;
     const float        object_spawn_speed    = 1200.0f;
     const sf::Vector2f object_spawn_position = {500.0f, 200.0f};
-    const float        object_min_radius     = 1.0f;
-    const float        object_max_radius     = 20.0f;
-    const uint32_t     max_objects_count     = 1000;
+    const float        object_min_radius     = 10.0f;
+    const float        object_max_radius     = 18.0f;
+    const uint32_t     max_objects_count     = 700;
     const float        max_angle             = 1.0f;
 
     sf::Clock clock;
@@ -51,15 +51,17 @@ int32_t main(int32_t, char*[])
     while (window.isOpen()) {
         sf::Event event{};
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed || sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+            if (event.type == sf::Event::Closed) {
                 window.close();
             }
         }
 
         if (solver.getObjectsCount() < max_objects_count && clock.getElapsedTime().asSeconds() >= object_spawn_delay) {
             clock.restart();
-            auto&       object = solver.addObject(object_spawn_position, RNGf::getRange(object_min_radius, object_max_radius));
+            const float radius_amp = (object_max_radius - object_min_radius) / 2;
+            const float radius_avg = (object_min_radius + object_max_radius) / 2;
             const float t      = solver.getTime();
+            auto&       object = solver.addObject(object_spawn_position, radius_amp * sin(1.4f * t + Math::PI * 0.5f) + radius_avg);
             const float angle  = max_angle * sin(t) + Math::PI * 0.5f;
             solver.setObjectVelocity(object, object_spawn_speed * sf::Vector2f{cos(angle), sin(angle)});
             object.color = getRainbow(t);
