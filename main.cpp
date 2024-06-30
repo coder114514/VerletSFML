@@ -26,8 +26,7 @@ int32_t main(int32_t, char*[])
     sf::ContextSettings settings;
     settings.antialiasingLevel = 1;
     sf::RenderWindow window(sf::VideoMode(window_width, window_height), "Verlet", sf::Style::Close, settings);
-    const uint32_t frame_rate = 60;
-    window.setFramerateLimit(frame_rate);
+    window.setFramerateLimit(60);
 
     Solver   solver;
     Renderer renderer{window};
@@ -35,18 +34,18 @@ int32_t main(int32_t, char*[])
     // Solver configuration
     solver.setConstraint({static_cast<float>(window_width) * 0.5f, static_cast<float>(window_height) * 0.5f}, 450.0f);
     solver.setSubStepsCount(8);
-    solver.setSimulationUpdateRate(frame_rate);
+    solver.setSimulationUpdateRate(60);
 
     // Set simulation attributes
-    const float        object_spawn_delay    = 0.025f;
+    const uint32_t     object_spawn_delay    = 2;
     const float        object_spawn_speed    = 1200.0f;
     const sf::Vector2f object_spawn_position = {500.0f, 200.0f};
     const float        object_min_radius     = 10.0f;
     const float        object_max_radius     = 18.0f;
-    const uint32_t     max_objects_count     = 700;
+    const uint32_t     max_objects_count     = 900;
     const float        max_angle             = 1.0f;
 
-    sf::Clock clock;
+    unsigned nticks = 0;
     // Main loop
     while (window.isOpen()) {
         sf::Event event{};
@@ -56,8 +55,8 @@ int32_t main(int32_t, char*[])
             }
         }
 
-        if (solver.getObjectsCount() < max_objects_count && clock.getElapsedTime().asSeconds() >= object_spawn_delay) {
-            clock.restart();
+        if (solver.getObjectsCount() < max_objects_count && nticks >= object_spawn_delay) {
+            nticks = 0;
             const float radius_amp = (object_max_radius - object_min_radius) / 2;
             const float radius_avg = (object_min_radius + object_max_radius) / 2;
             const float t      = solver.getTime();
@@ -66,6 +65,7 @@ int32_t main(int32_t, char*[])
             solver.setObjectVelocity(object, object_spawn_speed * sf::Vector2f{cos(angle), sin(angle)});
             object.color = getRainbow(t);
         }
+        nticks++;
 
         solver.update();
         window.clear(sf::Color::White);
