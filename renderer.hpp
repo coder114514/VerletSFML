@@ -12,7 +12,7 @@ public:
 
     }
 
-    void render(const Solver& solver) const
+    void render(const Solver& solver, float dt) const
     {
         // Render constraint
         const sf::Vector3f constraint = solver.getConstraint();
@@ -29,7 +29,8 @@ public:
         circle.setOrigin(1.0f, 1.0f);
         const auto& objects = solver.getObjects();
         for (const auto& obj : objects) {
-            circle.setPosition(obj.position);
+            sf::Vector2 pos = obj.next_pos(dt);
+            circle.setPosition(pos);
             circle.setScale(obj.radius, obj.radius);
             circle.setFillColor(obj.color);
             m_target.draw(circle);

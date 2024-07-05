@@ -33,6 +33,11 @@ struct VerletObject
         acceleration  = {};
     }
 
+    sf::Vector2f next_pos(float dt) const
+    {
+        return position + position - position_last + acceleration * (dt * dt);
+    }
+
     void accelerate(sf::Vector2f a)
     {
         acceleration += a;
@@ -78,9 +83,9 @@ public:
         }
     }
 
-    void setSimulationUpdateRate(uint32_t rate)
+    void setSimulationTickDt(float dt)
     {
-        m_frame_dt = 1.0f / static_cast<float>(rate);
+        m_frame_dt = dt;
     }
 
     void setConstraint(sf::Vector2f position, float radius)
@@ -147,7 +152,7 @@ private:
 
     void checkCollisions(float dt)
     {
-        const float  response_coef = 0.75f;
+        const float  response_coef = 1.75f;
         const size_t objects_count = m_objects.size();
         // Iterate on all objects
         for (size_t i{0}; i < objects_count; ++i) {
